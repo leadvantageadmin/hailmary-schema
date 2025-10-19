@@ -21,24 +21,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install Prisma
-        run: npm install -g prisma@latest
-
-      - name: Install dependencies
+      - name: Build Docker image
         run: |
-          npm install -g @prisma/client
-          pip install psycopg2-binary
+          cd services/schema
+          docker-compose build schema-service
 
       - name: Determine version
         id: version
@@ -46,87 +35,25 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
           else
-            VERSION=${GITHUB_REF#refs/tags/schema-v}
+            VERSION=${GITHUB_REF#refs/tags/schema-}
             echo "version=$VERSION" >> $GITHUB_OUTPUT
           fi
 
-      - name: Validate Schema
+      - name: Validate Schema and Generate Clients
         run: |
           cd services/schema
-          ./scripts/validate-schema.sh ${{ steps.version.outputs.version }}
+          docker-compose run --rm schema-service ./scripts/validate-schema.sh ${{ steps.version.outputs.version }}
+          docker-compose run --rm schema-service ./scripts/generate-clients.sh ${{ steps.version.outputs.version }} all
 
-      - name: Generate Clients
+      - name: Publish Schema Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd services/schema
-          ./scripts/generate-clients.sh ${{ steps.version.outputs.version }} all
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Schema Version ${{ steps.version.outputs.version }}
-          body: |
-            ## Schema Version ${{ steps.version.outputs.version }}
-            
-            ### Schema Changes
-            - Customer table with all fields
-            - Company table for normalized company data  
-            - Prospect table for normalized prospect data
-            - Revenue field support with BigInt storage
-            - Materialized view system for performance
-            - Comprehensive indexing for search optimization
-            
-            ### Generated Clients
-            - **Node.js/TypeScript**: Full Prisma client with type safety
-            - **Python**: Custom client with database operations
-            - **TypeScript**: Type definitions for all models
-            
-            ### Migration Scripts
-            - Database schema creation
-            - Index creation for performance
-            - Materialized view setup
-            - Monitoring table creation
-            
-            ### Files Included
-            - `schema.prisma` - Prisma schema definition
-            - `metadata.json` - Version metadata and compatibility info
-            - `changelog.md` - Detailed changelog and documentation
-            - `clients/` - Generated client packages for all languages
-            - `migrations/` - Database migration scripts
-            
-            ### Usage
-            Services can pull this schema version using:
-            ```bash
-            ./scripts/pull-schema.sh ${{ steps.version.outputs.version }}
-            ```
-          draft: false
-          prerelease: false
-
-      - name: Upload Schema Assets
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./services/schema/versions/${{ steps.version.outputs.version }}/
-          asset_name: schema-${{ steps.version.outputs.version }}.tar.gz
-          asset_content_type: application/gzip
-
-      - name: Upload Migration Assets
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./services/schema/migrations/${{ steps.version.outputs.version }}/
-          asset_name: migrations-${{ steps.version.outputs.version }}.tar.gz
-          asset_content_type: application/gzip
+          docker-compose run --rm -e GITHUB_TOKEN -e GITHUB_REPO schema-service ./scripts/publish.sh ${{ steps.version.outputs.version }}
 
       - name: Notify Services
         run: |
           echo "📢 Schema version ${{ steps.version.outputs.version }} published successfully!"
           echo "🚀 Services can now pull this version from GitHub releases"
-          echo "📋 Release URL: ${{ steps.create_release.outputs.html_url }}"
+          echo "📋 Release URL: https://github.com/${{ github.repository }}/releases/tag/schema-${{ steps.version.outputs.version }}"
