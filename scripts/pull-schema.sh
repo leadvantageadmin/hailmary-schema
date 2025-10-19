@@ -9,20 +9,22 @@ GITHUB_REPO=${4:-"leadvantageadmin/hailmary-schema"}
 
 echo "📥 Pulling schema version $VERSION for language $LANGUAGE..."
 
-# Create target directory
+# Create target directory (convert to absolute path)
 mkdir -p "$TARGET_DIR"
+TARGET_DIR=$(realpath "$TARGET_DIR")
 
 # Determine download URL
 if [ "$VERSION" = "latest" ]; then
     DOWNLOAD_URL="https://github.com/$GITHUB_REPO/releases/latest/download/schema-latest.tar.gz"
     VERSION_FILE="latest"
 else
-    DOWNLOAD_URL="https://github.com/$GITHUB_REPO/releases/download/schema-v$VERSION/schema-v$VERSION.tar.gz"
-    VERSION_FILE="v$VERSION"
+    DOWNLOAD_URL="https://github.com/$GITHUB_REPO/releases/download/schema-$VERSION/schema-$VERSION.tar.gz"
+    VERSION_FILE="$VERSION"
 fi
 
 # Download and extract schema
 echo "🔽 Downloading schema from GitHub..."
+echo "🔗 Download URL: $DOWNLOAD_URL"
 TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR"
 
@@ -33,8 +35,8 @@ if curl -L -o schema.tar.gz "$DOWNLOAD_URL"; then
     tar -xzf schema.tar.gz
     
     # Copy to target directory
-    if [ -d "versions/$VERSION_FILE" ]; then
-        cp -r "versions/$VERSION_FILE"/* "$TARGET_DIR/"
+    if [ -d "$VERSION_FILE" ]; then
+        cp -r "$VERSION_FILE"/* "$TARGET_DIR/"
         echo "✅ Schema extracted to $TARGET_DIR"
     else
         echo "❌ Schema version $VERSION_FILE not found in download"
@@ -54,7 +56,7 @@ rm -rf "$TEMP_DIR"
 # Download specific client if requested
 if [ "$LANGUAGE" != "all" ]; then
     echo "📦 Downloading $LANGUAGE client..."
-    CLIENT_URL="https://github.com/$GITHUB_REPO/releases/download/schema-v$VERSION/client-$VERSION-$LANGUAGE.tar.gz"
+    CLIENT_URL="https://github.com/$GITHUB_REPO/releases/download/schema-$VERSION/client-$VERSION-$LANGUAGE.tar.gz"
     
     if curl -L -o client.tar.gz "$CLIENT_URL"; then
         tar -xzf client.tar.gz -C "$TARGET_DIR/clients/$LANGUAGE/"

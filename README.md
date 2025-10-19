@@ -31,7 +31,7 @@ cd hailmary-schema
 ./scripts/generate-clients.sh v1.0.0 all
 
 # Start API server
-docker-compose up -d schema-api
+docker compose up -d schema-api
 ```
 
 ## Overview
@@ -68,7 +68,7 @@ services/schema/
 │   └── schema-api.js          # REST API server
 ├── config/                     # Configuration files
 ├── .github/workflows/          # GitHub Actions
-└── docker-compose.yml          # Service configuration
+└── docker-compose.yml          # Service configuration (use 'docker compose' commands)
 ```
 
 ## Quick Start
@@ -175,7 +175,7 @@ psql $DATABASE_URL -f migrations/v1.0.0/002_materialized_views.sql
 node scripts/schema-api.js
 
 # Or using Docker
-docker-compose up schema-api
+docker compose up schema-api
 ```
 
 ### API Endpoints

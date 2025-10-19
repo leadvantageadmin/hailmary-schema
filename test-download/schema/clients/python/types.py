@@ -1,0 +1,81 @@
+"""
+Type definitions for HailMary Prisma Client
+"""
+
+from typing import Optional
+from datetime import datetime
+
+class Customer:
+    def __init__(self, **kwargs):
+        self.id: str = kwargs.get('id')
+        self.salutation: Optional[str] = kwargs.get('salutation')
+        self.firstName: Optional[str] = kwargs.get('firstName')
+        self.lastName: Optional[str] = kwargs.get('lastName')
+        self.email: Optional[str] = kwargs.get('email')
+        self.company: Optional[str] = kwargs.get('company')
+        self.address: Optional[str] = kwargs.get('address')
+        self.city: Optional[str] = kwargs.get('city')
+        self.state: Optional[str] = kwargs.get('state')
+        self.country: Optional[str] = kwargs.get('country')
+        self.zipCode: Optional[str] = kwargs.get('zipCode')
+        self.phone: Optional[str] = kwargs.get('phone')
+        self.mobilePhone: Optional[str] = kwargs.get('mobilePhone')
+        self.industry: Optional[str] = kwargs.get('industry')
+        self.jobTitleLevel: Optional[str] = kwargs.get('jobTitleLevel')
+        self.jobTitle: Optional[str] = kwargs.get('jobTitle')
+        self.department: Optional[str] = kwargs.get('department')
+        self.minEmployeeSize: Optional[int] = kwargs.get('minEmployeeSize')
+        self.maxEmployeeSize: Optional[int] = kwargs.get('maxEmployeeSize')
+        self.jobTitleLink: Optional[str] = kwargs.get('jobTitleLink')
+        self.employeeSizeLink: Optional[str] = kwargs.get('employeeSizeLink')
+        self.revenue: Optional[int] = kwargs.get('revenue')
+        self.externalSource: str = kwargs.get('externalSource')
+        self.externalId: str = kwargs.get('externalId')
+        self.createdAt: datetime = kwargs.get('createdAt')
+        self.updatedAt: datetime = kwargs.get('updatedAt')
+
+class Company:
+    def __init__(self, **kwargs):
+        self.id: str = kwargs.get('id')
+        self.domain: str = kwargs.get('domain')
+        self.name: Optional[str] = kwargs.get('name')
+        self.industry: Optional[str] = kwargs.get('industry')
+        self.minEmployeeSize: Optional[int] = kwargs.get('minEmployeeSize')
+        self.maxEmployeeSize: Optional[int] = kwargs.get('maxEmployeeSize')
+        self.employeeSizeLink: Optional[str] = kwargs.get('employeeSizeLink')
+        self.revenue: Optional[int] = kwargs.get('revenue')
+        self.address: Optional[str] = kwargs.get('address')
+        self.city: Optional[str] = kwargs.get('city')
+        self.state: Optional[str] = kwargs.get('state')
+        self.country: Optional[str] = kwargs.get('country')
+        self.zipCode: Optional[str] = kwargs.get('zipCode')
+        self.phone: Optional[str] = kwargs.get('phone')
+        self.mobilePhone: Optional[str] = kwargs.get('mobilePhone')
+        self.externalSource: str = kwargs.get('externalSource')
+        self.externalId: str = kwargs.get('externalId')
+        self.createdAt: datetime = kwargs.get('createdAt')
+        self.updatedAt: datetime = kwargs.get('updatedAt')
+
+class Prospect:
+    def __init__(self, **kwargs):
+        self.id: str = kwargs.get('id')
+        self.salutation: Optional[str] = kwargs.get('salutation')
+        self.firstName: Optional[str] = kwargs.get('firstName')
+        self.lastName: Optional[str] = kwargs.get('lastName')
+        self.email: Optional[str] = kwargs.get('email')
+        self.jobTitle: Optional[str] = kwargs.get('jobTitle')
+        self.jobTitleLevel: Optional[str] = kwargs.get('jobTitleLevel')
+        self.department: Optional[str] = kwargs.get('department')
+        self.jobTitleLink: Optional[str] = kwargs.get('jobTitleLink')
+        self.address: Optional[str] = kwargs.get('address')
+        self.city: Optional[str] = kwargs.get('city')
+        self.state: Optional[str] = kwargs.get('state')
+        self.country: Optional[str] = kwargs.get('country')
+        self.zipCode: Optional[str] = kwargs.get('zipCode')
+        self.phone: Optional[str] = kwargs.get('phone')
+        self.mobilePhone: Optional[str] = kwargs.get('mobilePhone')
+        self.companyId: str = kwargs.get('companyId')
+        self.externalSource: str = kwargs.get('externalSource')
+        self.externalId: str = kwargs.get('externalId')
+        self.createdAt: datetime = kwargs.get('createdAt')
+        self.updatedAt: datetime = kwargs.get('updatedAt')
