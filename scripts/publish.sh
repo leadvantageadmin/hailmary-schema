@@ -21,19 +21,22 @@ echo "🔧 Generating clients..."
 # 3. Create release assets
 echo "📦 Creating release assets..."
 
+# Define the output directory as the mounted volume
+OUTPUT_DIR="/app"
+
 # Create schema archive
-tar -czf "schema-$VERSION.tar.gz" -C versions "$VERSION"
+tar -czf "$OUTPUT_DIR/schema-$VERSION.tar.gz" -C versions "$VERSION"
 
 # Create client archives
 for lang in node python typescript; do
     if [ -d "versions/$VERSION/clients/$lang" ]; then
-        tar -czf "client-$VERSION-$lang.tar.gz" -C "versions/$VERSION/clients" "$lang"
+        tar -czf "$OUTPUT_DIR/client-$VERSION-$lang.tar.gz" -C "versions/$VERSION/clients" "$lang"
     fi
 done
 
 # Create migration archive
 if [ -d "migrations/$VERSION" ]; then
-    tar -czf "migrations-$VERSION.tar.gz" -C migrations "$VERSION"
+    tar -czf "$OUTPUT_DIR/migrations-$VERSION.tar.gz" -C migrations "$VERSION"
 fi
 
 # 4. Prepare release assets (GitHub Actions will handle release creation)
