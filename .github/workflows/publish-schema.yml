@@ -26,7 +26,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker-compose build schema-service
+          docker compose build schema-service
 
       - name: Determine version
         id: version
@@ -40,14 +40,14 @@ jobs:
 
       - name: Validate Schema and Generate Clients
         run: |
-          docker-compose run --rm schema-service ./scripts/validate-schema.sh ${{ steps.version.outputs.version }}
-          docker-compose run --rm schema-service ./scripts/generate-clients.sh ${{ steps.version.outputs.version }} all
+          docker compose run --rm schema-service ./scripts/validate-schema.sh ${{ steps.version.outputs.version }}
+          docker compose run --rm schema-service ./scripts/generate-clients.sh ${{ steps.version.outputs.version }} all
 
       - name: Publish Schema Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          docker-compose run --rm -e GITHUB_TOKEN -e GITHUB_REPO schema-service ./scripts/publish.sh ${{ steps.version.outputs.version }}
+          docker compose run --rm -e GITHUB_TOKEN -e GITHUB_REPO schema-service ./scripts/publish.sh ${{ steps.version.outputs.version }}
 
       - name: Notify Services
         run: |
