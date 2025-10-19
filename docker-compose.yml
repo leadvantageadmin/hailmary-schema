@@ -6,11 +6,10 @@ services:
       - SCHEMA_VERSION=${SCHEMA_VERSION:-latest}
       - CLIENT_LANGUAGES=${CLIENT_LANGUAGES:-node,python,typescript}
       - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_REPO=${GITHUB_REPO:-leadvantageadmin/hailmary-schema}
     volumes:
-      - ./versions:/app/versions
-      - ./migrations:/app/migrations
-      - ./scripts:/app/scripts
-      - ./config:/app/config
+      - .:/app
+      - ~/.gitconfig:/root/.gitconfig:ro
     networks:
       - hailmary-network
 

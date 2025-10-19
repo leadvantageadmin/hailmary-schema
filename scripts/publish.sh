@@ -52,14 +52,23 @@ if [ "$VERSION" != "latest" ]; then
     ln -sfn "$VERSION" "./versions/latest"
 fi
 
-# 5. Commit and push to GitHub (if we're in a git repository)
-if [ -d "../../.git" ]; then
+# 5. Set up git if needed
+if [ -f "./scripts/setup-git.sh" ]; then
+    echo "🔧 Setting up Git..."
+    ./scripts/setup-git.sh
+fi
+
+# 6. Commit and push to GitHub (if we're in a git repository)
+if [ -d ".git" ]; then
     echo "📝 Committing changes to git..."
     
-    # Add all schema files
-    git add services/schema/versions/$VERSION/
-    git add services/schema/migrations/$VERSION/
-    git add services/schema/versions/latest
+    # Add all schema files and any new changes
+    git add versions/$VERSION/
+    git add migrations/$VERSION/
+    git add versions/latest
+    git add scripts/setup-git.sh 2>/dev/null || true
+    git add docker-compose.yml 2>/dev/null || true
+    git add scripts/publish.sh 2>/dev/null || true
     
     # Commit with descriptive message
     git commit -m "feat: Publish schema version $VERSION
