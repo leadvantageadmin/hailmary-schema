@@ -94,9 +94,18 @@ services/schema/
 ```
 
 ### 3. Publish Schema
+
+#### For Local Development
 ```bash
-# Publish to GitHub (requires GITHUB_TOKEN)
+# Publish for local development (includes Git operations)
 export GITHUB_TOKEN=your_token_here
+./scripts/publish-dev.sh v1.0.0
+```
+
+#### For GitHub Actions (Automated)
+```bash
+# Publish via GitHub Actions (no Git operations)
+# This script is designed to run in CI/CD pipelines
 ./scripts/publish.sh v1.0.0
 ```
 

@@ -1,14 +1,13 @@
 #!/bin/bash
 set -e
 
-# GitHub Actions publishing script
-# This script is designed to run in GitHub Actions and only creates release assets
-# For local development, use publish-dev.sh instead
+# Development publishing script for local use
+# This script includes Git operations and is meant for local development/testing
 
 VERSION=${1:-"latest"}
 GITHUB_REPO=${GITHUB_REPO:-"leadvantageadmin/hailmary-schema"}
 
-echo "🚀 Publishing schema version $VERSION to GitHub..."
+echo "🚀 Publishing schema version $VERSION for development..."
 
 # 1. Validate schema
 echo "🔍 Validating schema..."
@@ -18,7 +17,21 @@ echo "🔍 Validating schema..."
 echo "🔧 Generating clients..."
 ./scripts/generate-clients.sh "$VERSION" all
 
-# 3. Create release assets
+# 3. Update latest symlink
+echo "🔗 Updating latest symlink..."
+if [ "$VERSION" != "latest" ]; then
+    if [ -L "versions/latest" ]; then
+        rm "versions/latest"
+    fi
+    ln -s "$VERSION" "versions/latest"
+    echo "✅ Latest symlink updated to point to $VERSION"
+fi
+
+# 4. Setup Git (for local development)
+echo "🔧 Setting up Git..."
+./scripts/setup-git.sh
+
+# 5. Create release assets
 echo "📦 Creating release assets..."
 
 # Create schema archive
@@ -36,7 +49,7 @@ if [ -d "migrations/$VERSION" ]; then
     tar -czf "migrations-$VERSION.tar.gz" -C migrations "$VERSION"
 fi
 
-# 4. Create GitHub release
+# 6. Create GitHub release (if GitHub CLI is available)
 if command -v gh >/dev/null 2>&1; then
     echo "📤 Creating GitHub release..."
     
@@ -75,10 +88,31 @@ else
     echo "   Assets: schema-$VERSION.tar.gz, client-*.tar.gz, migrations-*.tar.gz"
 fi
 
+# 7. Git operations (for local development)
+if [ -d ".git" ]; then
+    echo "🔧 Performing Git operations..."
+    
+    # Add and commit changes
+    git add .
+    git commit -m "feat: Publish schema version $VERSION
+
+- Add schema version $VERSION
+- Update latest symlink
+- Generate clients for all languages
+- Include migration scripts" || echo "⚠️ No changes to commit"
+    
+    # Tag the version
+    git tag "schema-$VERSION" || echo "⚠️ Tag already exists"
+    git push origin "schema-$VERSION" || echo "⚠️ Failed to push tag"
+    git push origin main || echo "⚠️ Failed to push main"
+else
+    echo "⚠️ Not in a git repository, skipping git operations"
+fi
+
 # Clean up assets
 rm -f "schema-$VERSION.tar.gz" "client-$VERSION-"*.tar.gz "migrations-$VERSION.tar.gz"
 
-echo "✅ Schema version $VERSION published successfully!"
+echo "✅ Schema version $VERSION published successfully for development!"
 echo ""
 echo "📋 What was published:"
 echo "   • Schema version: $VERSION"
