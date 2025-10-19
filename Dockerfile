@@ -27,7 +27,6 @@ RUN npm install
 
 # Copy schema files
 COPY versions/ ./versions/
-COPY migrations/ ./migrations/
 COPY scripts/ ./scripts/
 
 # Make scripts executable
