@@ -118,7 +118,7 @@ EOF
         echo "📦 Creating release assets..."
         
         # Create schema archive
-        tar -czf "schema-v$VERSION.tar.gz" -C versions "$VERSION"
+        tar -czf "schema-$VERSION.tar.gz" -C versions "$VERSION"
         
         # Create client archives
         for lang in node python typescript; do
@@ -134,11 +134,11 @@ EOF
         
         # Create release using GitHub CLI
         if command -v gh >/dev/null 2>&1; then
-            gh release create "schema-v$VERSION" \
+            gh release create "schema-$VERSION" \
                 --title "Schema Version $VERSION" \
                 --notes "$RELEASE_NOTES" \
                 --repo $GITHUB_REPO \
-                "schema-v$VERSION.tar.gz" \
+                "schema-$VERSION.tar.gz" \
                 "client-$VERSION-node.tar.gz" \
                 "client-$VERSION-python.tar.gz" \
                 "client-$VERSION-typescript.tar.gz" \
@@ -146,18 +146,18 @@ EOF
         else
             echo "⚠️ GitHub CLI not found, skipping release creation"
             echo "📋 Manual release creation required:"
-            echo "   Tag: schema-v$VERSION"
+            echo "   Tag: schema-$VERSION"
             echo "   Title: Schema Version $VERSION"
             echo "   Notes: $RELEASE_NOTES"
-            echo "   Assets: schema-v$VERSION.tar.gz, client-*.tar.gz, migrations-*.tar.gz"
+            echo "   Assets: schema-$VERSION.tar.gz, client-*.tar.gz, migrations-*.tar.gz"
         fi
         
         # Clean up assets
-        rm -f "schema-v$VERSION.tar.gz" "client-$VERSION-"*.tar.gz "migrations-$VERSION.tar.gz"
+        rm -f "schema-$VERSION.tar.gz" "client-$VERSION-"*.tar.gz "migrations-$VERSION.tar.gz"
         
         # Tag the version
-        git tag "schema-v$VERSION"
-        git push origin "schema-v$VERSION"
+        git tag "schema-$VERSION"
+        git push origin "schema-$VERSION"
     fi
 else
     echo "⚠️ Not in a git repository, skipping git operations"
