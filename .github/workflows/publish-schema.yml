@@ -43,11 +43,49 @@ jobs:
           docker compose run --rm -v "$(pwd):/app" schema-service ./scripts/validate-schema.sh ${{ steps.version.outputs.version }}
           docker compose run --rm -v "$(pwd):/app" schema-service ./scripts/generate-clients.sh ${{ steps.version.outputs.version }} all
 
-      - name: Publish Schema Release
+      - name: Publish Schema Assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           docker compose run --rm -e GITHUB_TOKEN -e GITHUB_REPO -v "$(pwd):/app" schema-service ./scripts/publish.sh ${{ steps.version.outputs.version }}
+
+      - name: 🚀 Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            schema-${{ steps.version.outputs.version }}.tar.gz
+            client-${{ steps.version.outputs.version }}-node.tar.gz
+            client-${{ steps.version.outputs.version }}-python.tar.gz
+            client-${{ steps.version.outputs.version }}-typescript.tar.gz
+            migrations-${{ steps.version.outputs.version }}.tar.gz
+          draft: false
+          prerelease: false
+          tag_name: schema-${{ steps.version.outputs.version }}
+          name: Schema Version ${{ steps.version.outputs.version }}
+          body: |
+            ## Schema Version ${{ steps.version.outputs.version }}
+
+            ### What's included:
+            - Schema file: schema.prisma
+            - Generated clients: Node.js, Python, TypeScript
+            - Migration scripts: Database migration files
+
+            ### Usage:
+            ```bash
+            # Download latest version
+            curl -L https://github.com/${{ github.repository }}/releases/latest/download/schema-latest.tar.gz | tar -xz
+
+            # Download specific version
+            curl -L https://github.com/${{ github.repository }}/releases/download/schema-${{ steps.version.outputs.version }}/schema-${{ steps.version.outputs.version }}.tar.gz | tar -xz
+            ```
+
+            ### Files:
+            - `schema-${{ steps.version.outputs.version }}.tar.gz` - Complete schema package
+            - `client-${{ steps.version.outputs.version }}-node.tar.gz` - Node.js client
+            - `client-${{ steps.version.outputs.version }}-python.tar.gz` - Python client
+            - `client-${{ steps.version.outputs.version }}-typescript.tar.gz` - TypeScript types
+            - `migrations-${{ steps.version.outputs.version }}.tar.gz` - Database migrations
 
       - name: Notify Services
         run: |

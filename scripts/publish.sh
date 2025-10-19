@@ -36,47 +36,15 @@ if [ -d "migrations/$VERSION" ]; then
     tar -czf "migrations-$VERSION.tar.gz" -C migrations "$VERSION"
 fi
 
-# 4. Create GitHub release
-if command -v gh >/dev/null 2>&1; then
-    echo "📤 Creating GitHub release..."
-    
-    # Generate release notes
-    RELEASE_NOTES="Schema version $VERSION
-
-## What's included:
-- Schema file: schema.prisma
-- Generated clients: Node.js, Python, TypeScript
-- Migration scripts: $(ls -1 ./migrations/$VERSION/ 2>/dev/null | wc -l) files
-
-## Usage:
-\`\`\`bash
-# Download latest version
-curl -L https://github.com/$GITHUB_REPO/releases/latest/download/schema-latest.tar.gz | tar -xz
-
-# Download specific version
-curl -L https://github.com/$GITHUB_REPO/releases/download/schema-$VERSION/schema-$VERSION.tar.gz | tar -xz
-\`\`\`"
-
-    # Create release using GitHub CLI
-    gh release create "schema-$VERSION" \
-        --title "Schema Version $VERSION" \
-        --notes "$RELEASE_NOTES" \
-        --repo $GITHUB_REPO \
-        "schema-$VERSION.tar.gz" \
-        "client-$VERSION-node.tar.gz" \
-        "client-$VERSION-python.tar.gz" \
-        "client-$VERSION-typescript.tar.gz" \
-        "migrations-$VERSION.tar.gz" 2>/dev/null || true
-else
-    echo "⚠️ GitHub CLI not found, skipping release creation"
-    echo "📋 Manual release creation required:"
-    echo "   Tag: schema-$VERSION"
-    echo "   Title: Schema Version $VERSION"
-    echo "   Assets: schema-$VERSION.tar.gz, client-*.tar.gz, migrations-*.tar.gz"
-fi
-
-# Clean up assets
-rm -f "schema-$VERSION.tar.gz" "client-$VERSION-"*.tar.gz "migrations-$VERSION.tar.gz"
+# 4. Prepare release assets (GitHub Actions will handle release creation)
+echo "📦 Release assets prepared:"
+echo "   • schema-$VERSION.tar.gz"
+echo "   • client-$VERSION-node.tar.gz"
+echo "   • client-$VERSION-python.tar.gz"
+echo "   • client-$VERSION-typescript.tar.gz"
+echo "   • migrations-$VERSION.tar.gz"
+echo ""
+echo "ℹ️  GitHub Actions will create the release with these assets"
 
 echo "✅ Schema version $VERSION published successfully!"
 echo ""
