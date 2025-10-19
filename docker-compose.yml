@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  schema-service:
+    build: .
+    environment:
+      - SCHEMA_VERSION=${SCHEMA_VERSION:-latest}
+      - CLIENT_LANGUAGES=${CLIENT_LANGUAGES:-node,python,typescript}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    volumes:
+      - ./versions:/app/versions
+      - ./migrations:/app/migrations
+      - ./scripts:/app/scripts
+      - ./config:/app/config
+    networks:
+      - hailmary-network
+
+  schema-api:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - SCHEMA_VERSION=${SCHEMA_VERSION:-latest}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    command: ["node", "scripts/schema-api.js"]
+    volumes:
+      - ./versions:/app/versions
+      - ./migrations:/app/migrations
+    networks:
+      - hailmary-network
+
+networks:
+  hailmary-network:
+    driver: bridge

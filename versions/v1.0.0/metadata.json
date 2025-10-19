@@ -1,0 +1,24 @@
+{
+  "version": "v1.0.0",
+  "createdAt": "2024-01-15T10:30:00Z",
+  "author": "hailmary-team@leadvantage.com",
+  "description": "Initial schema version with Customer, Company, and Prospect tables",
+  "breakingChanges": [],
+  "additiveChanges": [
+    "Added Customer table with all fields",
+    "Added Company table for normalized company data",
+    "Added Prospect table for normalized prospect data",
+    "Added revenue field to Customer table",
+    "Added materialized view monitoring tables"
+  ],
+  "dependencies": {
+    "prisma": "^5.0.0",
+    "postgresql": ">=15.0"
+  },
+  "compatibility": {
+    "minClientVersion": "v1.0.0",
+    "maxClientVersion": "v1.0.0"
+  },
+  "migrationRequired": true,
+  "rollbackSupported": false
+}

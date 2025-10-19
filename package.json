@@ -1,0 +1,21 @@
+{
+  "name": "hailmary-schema-service",
+  "version": "1.0.0",
+  "description": "HailMary Schema Service - Independent, versioned Prisma schema management",
+  "main": "scripts/schema-api.js",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "prisma": "^5.0.0"
+  },
+  "scripts": {
+    "start": "node scripts/schema-api.js",
+    "validate": "./scripts/validate-schema.sh",
+    "generate": "./scripts/generate-clients.sh",
+    "publish": "./scripts/publish.sh"
+  },
+  "keywords": ["prisma", "schema", "database", "hailmary"],
+  "author": "HailMary Team",
+  "license": "MIT"
+}
