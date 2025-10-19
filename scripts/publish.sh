@@ -34,18 +34,15 @@ for lang in node python typescript; do
     fi
 done
 
-# Create migration archive
-if [ -d "migrations/$VERSION" ]; then
-    tar -czf "$OUTPUT_DIR/migrations-$VERSION.tar.gz" -C migrations "$VERSION"
-fi
+# Note: Migration files are included in the schema archive
+# No separate migration archive needed since schema archive contains everything
 
 # 4. Prepare release assets (GitHub Actions will handle release creation)
 echo "📦 Release assets prepared:"
-echo "   • schema-$VERSION.tar.gz"
+echo "   • schema-$VERSION.tar.gz (complete package with migrations)"
 echo "   • client-$VERSION-node.tar.gz"
 echo "   • client-$VERSION-python.tar.gz"
 echo "   • client-$VERSION-typescript.tar.gz"
-echo "   • migrations-$VERSION.tar.gz"
 echo ""
 echo "ℹ️  GitHub Actions will create the release with these assets"
 

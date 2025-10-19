@@ -61,7 +61,6 @@ jobs:
             client-${{ steps.version.outputs.version }}-node.tar.gz
             client-${{ steps.version.outputs.version }}-python.tar.gz
             client-${{ steps.version.outputs.version }}-typescript.tar.gz
-            migrations-${{ steps.version.outputs.version }}.tar.gz
           draft: false
           prerelease: false
           tag_name: schema-${{ steps.version.outputs.version }}
@@ -84,11 +83,10 @@ jobs:
             ```
 
             ### Files:
-            - `schema-${{ steps.version.outputs.version }}.tar.gz` - Complete schema package
+            - `schema-${{ steps.version.outputs.version }}.tar.gz` - Complete schema package (includes migrations)
             - `client-${{ steps.version.outputs.version }}-node.tar.gz` - Node.js client
             - `client-${{ steps.version.outputs.version }}-python.tar.gz` - Python client
             - `client-${{ steps.version.outputs.version }}-typescript.tar.gz` - TypeScript types
-            - `migrations-${{ steps.version.outputs.version }}.tar.gz` - Database migrations
 
       - name: Notify Services
         run: |

@@ -208,19 +208,20 @@ Schema version $VERSION based on $BASE_VERSION.
 - [ ] Integration tests passed
 EOF
 
-# Create migration directory if it doesn't exist
-if [ ! -d "migrations/$VERSION_DIR" ]; then
-    echo "📁 Creating migration directory: migrations/$VERSION_DIR"
-    mkdir -p "migrations/$VERSION_DIR"
-    
-    # Copy base migrations if they exist
-    if [ -d "migrations/$BASE_VERSION_DIR" ]; then
-        echo "📋 Copying migration scripts from base version..."
-        cp -r "migrations/$BASE_VERSION_DIR"/* "migrations/$VERSION_DIR/"
-    else
-        echo "📝 Creating default migration scripts..."
-        # Create initial migration
-        cat > "migrations/$VERSION_DIR/001_initial_schema.sql" << 'EOF'
+# Create migration files directly in version directory
+echo "📁 Creating migration files in version directory..."
+if [ ! -d "$VERSION_PATH/migrations" ]; then
+    mkdir -p "$VERSION_PATH/migrations"
+fi
+
+# Copy base migrations if they exist in the base version
+if [ -d "versions/$BASE_VERSION_DIR/migrations" ] && [ "$(ls -A versions/$BASE_VERSION_DIR/migrations 2>/dev/null)" ]; then
+    echo "📋 Copying migration scripts from base version..."
+    cp -r "versions/$BASE_VERSION_DIR/migrations"/* "$VERSION_PATH/migrations/"
+else
+    echo "📝 Creating default migration scripts..."
+    # Create initial migration
+    cat > "$VERSION_PATH/migrations/001_initial_schema.sql" << 'EOF'
 -- Migration: Initial schema setup
 -- Version: v1.0.0
 -- Description: Creates initial database schema
@@ -230,7 +231,7 @@ if [ ! -d "migrations/$VERSION_DIR" ]; then
 EOF
 
         # Create materialized view migration
-        cat > "migrations/$VERSION_DIR/002_materialized_views.sql" << 'EOF'
+        cat > "$VERSION_PATH/migrations/002_materialized_views.sql" << 'EOF'
 -- Migration: Materialized views setup
 -- Version: v1.0.0
 -- Description: Creates materialized views and monitoring tables
@@ -288,7 +289,9 @@ END;
 $$ LANGUAGE plpgsql;
 EOF
     fi
-fi
+
+# Migration files are now created directly in version directory
+echo "✅ Migration files created in version directory"
 
 # Update the latest symlink to point to the new version
 echo "🔗 Updating latest symlink..."
@@ -305,7 +308,7 @@ echo "   • Version directory: $VERSION_PATH"
 echo "   • Schema file: $VERSION_PATH/schema.prisma"
 echo "   • Metadata: $VERSION_PATH/metadata.json"
 echo "   • Changelog: $VERSION_PATH/changelog.md"
-echo "   • Migration scripts: migrations/$VERSION_DIR/"
+echo "   • Migration scripts: $VERSION_PATH/migrations/"
 echo "   • Latest symlink: versions/latest -> $VERSION_DIR"
 echo ""
 echo "🚀 Next steps:"
