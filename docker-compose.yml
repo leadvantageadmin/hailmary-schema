@@ -23,7 +23,7 @@ services:
     command: ["node", "scripts/schema-api.js"]
     volumes:
       - ./versions:/app/versions
-      - ./migrations:/app/migrations
+      - ./scripts:/app/scripts
     networks:
       - hailmary-network
 

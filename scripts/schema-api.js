@@ -10,7 +10,7 @@ app.use(express.json());
 // Get schema version
 app.get('/api/schema/version/:version', (req, res) => {
   const version = req.params.version;
-  const versionPath = path.join(__dirname, '..', 'versions', version);
+  const versionPath = path.join('/app', 'versions', version);
   
   try {
     if (!fs.existsSync(versionPath)) {
@@ -90,7 +90,7 @@ app.get('/api/schema/latest', (req, res) => {
 // Get migrations for version
 app.get('/api/schema/migrations/:version', (req, res) => {
   const version = req.params.version;
-  const migrationsPath = path.join(__dirname, '..', 'migrations', version);
+  const migrationsPath = path.join('/app', 'versions', version, 'migrations');
   
   try {
     if (!fs.existsSync(migrationsPath)) {
