@@ -14,9 +14,8 @@ echo "🚀 Publishing schema version $VERSION to GitHub..."
 echo "🔍 Validating schema..."
 ./scripts/validate-schema.sh "$VERSION"
 
-# 2. Generate clients
-echo "🔧 Generating clients..."
-./scripts/generate-clients.sh "$VERSION" all
+# 2. Skip client generation (removed support)
+echo "⏭️ Skipping client generation (support removed)"
 
 # 3. Create release assets
 echo "📦 Creating release assets..."
@@ -27,22 +26,15 @@ OUTPUT_DIR="/app"
 # Create schema archive
 tar -czf "$OUTPUT_DIR/schema-$VERSION.tar.gz" -C versions "$VERSION"
 
-# Create client archives
-for lang in node python typescript; do
-    if [ -d "versions/$VERSION/clients/$lang" ]; then
-        tar -czf "$OUTPUT_DIR/client-$VERSION-$lang.tar.gz" -C "versions/$VERSION/clients" "$lang"
-    fi
-done
+# Skip client archives (support removed)
+echo "⏭️ Skipping client archive creation (support removed)"
 
 # Note: Migration files are included in the schema archive
 # No separate migration archive needed since schema archive contains everything
 
 # 4. Prepare release assets (GitHub Actions will handle release creation)
 echo "📦 Release assets prepared:"
-echo "   • schema-$VERSION.tar.gz (complete package with migrations)"
-echo "   • client-$VERSION-node.tar.gz"
-echo "   • client-$VERSION-python.tar.gz"
-echo "   • client-$VERSION-typescript.tar.gz"
+echo "   • schema-$VERSION.tar.gz (complete package with migrations, changelog, and metadata)"
 echo ""
 echo "ℹ️  GitHub Actions will create the release with these assets"
 
@@ -50,8 +42,10 @@ echo "✅ Schema version $VERSION published successfully!"
 echo ""
 echo "📋 What was published:"
 echo "   • Schema version: $VERSION"
-echo "   • Generated clients: Node.js, Python, TypeScript"
+echo "   • Schema file: schema.prisma"
 echo "   • Migration scripts: $(ls -1 ./migrations/$VERSION/ 2>/dev/null | wc -l) files"
+echo "   • Changelog: changelog.md"
+echo "   • Metadata: metadata.json"
 echo "   • GitHub release: schema-$VERSION"
 echo ""
 echo "🚀 Services can now pull this schema version using:"

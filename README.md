@@ -38,10 +38,9 @@ docker compose up -d schema-api
 
 This service provides:
 - **Versioned Schema Management**: Multiple schema versions with metadata
-- **Multi-Language Client Generation**: Node.js, Python, TypeScript clients
 - **Migration Management**: Database migration scripts for each version
 - **GitHub Integration**: Automated publishing and distribution
-- **API Access**: REST API for schema and client access
+- **API Access**: REST API for schema access
 
 ## Directory Structure
 
@@ -51,11 +50,7 @@ services/schema/
 │   ├── v1.0.0/                 # Schema version 1.0.0
 │   │   ├── schema.prisma       # Prisma schema definition
 │   │   ├── metadata.json       # Version metadata
-│   │   ├── changelog.md        # Version changelog
-│   │   └── clients/            # Generated clients
-│   │       ├── node/           # Node.js client
-│   │       ├── python/         # Python client
-│   │       └── typescript/     # TypeScript types
+│   │   └── changelog.md        # Version changelog
 │   └── latest -> v1.0.0/       # Symlink to latest version
 ├── migrations/                 # Database migrations
 │   └── v1.0.0/                # Migrations for version 1.0.0
@@ -63,7 +58,6 @@ services/schema/
 │       └── 002_materialized_views.sql
 ├── scripts/                    # Management scripts
 │   ├── validate-schema.sh     # Validate schema syntax
-│   ├── generate-clients.sh    # Generate clients
 │   ├── publish.sh             # Publish to GitHub
 │   └── schema-api.js          # REST API server
 ├── config/                     # Configuration files
@@ -82,16 +76,8 @@ services/schema/
 ./scripts/validate-schema.sh v1.0.0
 ```
 
-### 2. Generate Clients
-```bash
-# Generate all clients for latest version
-./scripts/generate-clients.sh latest all
-
-# Generate specific client type
-./scripts/generate-clients.sh v1.0.0 node
-./scripts/generate-clients.sh v1.0.0 python
-./scripts/generate-clients.sh v1.0.0 typescript
-```
+### 2. Client Generation (Removed)
+Client generation support has been removed. The service now focuses on schema and migration management only.
 
 ### 3. Publish Schema
 
@@ -128,40 +114,9 @@ export GITHUB_TOKEN=your_token_here
 - `MaterializedViewLog`: View refresh tracking
 - `MaterializedViewError`: Error logging
 
-## Client Generation
+## Client Generation (Removed)
 
-### Node.js/TypeScript Client
-```typescript
-import { PrismaClient } from './clients/node';
-
-const prisma = new PrismaClient();
-
-// Use generated client
-const customers = await prisma.customer.findMany();
-```
-
-### Python Client
-```python
-from clients.python import PrismaClient
-
-client = PrismaClient()
-
-# Use generated client
-customers = client.find_many_customers()
-```
-
-### TypeScript Types
-```typescript
-import { Customer, Company, Prospect } from './clients/typescript';
-
-// Use generated types
-const customer: Customer = {
-  id: '123',
-  firstName: 'John',
-  lastName: 'Doe',
-  // ... other fields
-};
-```
+Client generation support has been removed from this service. Services should use the schema files directly with their preferred Prisma client generation tools.
 
 ## Migration Management
 
@@ -192,9 +147,6 @@ docker compose up schema-api
 # Get schema version
 GET /api/schema/version/v1.0.0
 
-# Get client for version and language
-GET /api/schema/client/v1.0.0/node
-
 # List available versions
 GET /api/schema/versions
 
@@ -217,9 +169,8 @@ The service includes GitHub Actions for automated publishing:
 # Triggers on tag push: schema-v*
 # Automatically:
 # 1. Validates schema
-# 2. Generates clients
-# 3. Creates GitHub release
-# 4. Uploads assets
+# 2. Creates GitHub release
+# 3. Uploads schema assets
 ```
 
 ### Publishing Workflow
@@ -230,9 +181,8 @@ git push origin schema-v1.1.0
 
 # 2. GitHub Actions automatically:
 #    - Validates schema
-#    - Generates clients
 #    - Creates release
-#    - Uploads assets
+#    - Uploads schema assets
 ```
 
 ## Service Integration
@@ -253,7 +203,6 @@ services:
 ### Environment Variables
 - `SCHEMA_VERSION`: Schema version to use (default: latest)
 - `GITHUB_TOKEN`: GitHub token for publishing
-- `CLIENT_LANGUAGES`: Comma-separated list of languages to generate
 
 ## Development
 
@@ -276,11 +225,8 @@ vim versions/v1.1.0/changelog.md
 ./scripts/publish.sh v1.1.0
 ```
 
-### Adding New Client Language
-1. Modify `generate-clients.sh` to add new language support
-2. Add client generation logic
-3. Update API endpoints if needed
-4. Test with new language
+### Client Generation (Removed)
+Client generation support has been removed. Services should generate their own Prisma clients using the schema files.
 
 ## Best Practices
 
@@ -290,11 +236,10 @@ vim versions/v1.1.0/changelog.md
 - Provide migration scripts for all versions
 - Test migrations before publishing
 
-### Client Generation
-- Generate clients for all supported languages
-- Include comprehensive type definitions
-- Test clients with sample data
-- Document client usage
+### Schema Distribution
+- Include schema.prisma, migrations, changelog.md, and metadata.json in releases
+- Test schema with sample data
+- Document schema changes in changelog
 
 ### Migration Management
 - Create atomic migration scripts
@@ -312,10 +257,9 @@ vim versions/v1.1.0/changelog.md
 npx prisma validate --schema=versions/v1.0.0/schema.prisma
 ```
 
-**Client generation fails:**
+**Schema validation fails:**
 ```bash
-# Check Node.js and Prisma installation
-node --version
+# Check Prisma installation
 npx prisma --version
 ```
 

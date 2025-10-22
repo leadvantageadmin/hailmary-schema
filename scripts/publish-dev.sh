@@ -13,9 +13,8 @@ echo "🚀 Publishing schema version $VERSION for development..."
 echo "🔍 Validating schema..."
 ./scripts/validate-schema.sh "$VERSION"
 
-# 2. Generate clients
-echo "🔧 Generating clients..."
-./scripts/generate-clients.sh "$VERSION" all
+# 2. Skip client generation (removed support)
+echo "⏭️ Skipping client generation (support removed)"
 
 # 3. Update latest symlink
 echo "🔗 Updating latest symlink..."
@@ -37,12 +36,8 @@ echo "📦 Creating release assets..."
 # Create schema archive
 tar -czf "schema-$VERSION.tar.gz" -C versions "$VERSION"
 
-# Create client archives
-for lang in node python typescript; do
-    if [ -d "versions/$VERSION/clients/$lang" ]; then
-        tar -czf "client-$VERSION-$lang.tar.gz" -C "versions/$VERSION/clients" "$lang"
-    fi
-done
+# Skip client archives (support removed)
+echo "⏭️ Skipping client archive creation (support removed)"
 
 # Create migration archive
 if [ -d "migrations/$VERSION" ]; then
@@ -76,16 +71,13 @@ curl -L https://github.com/$GITHUB_REPO/releases/download/schema-$VERSION/schema
         --notes "$RELEASE_NOTES" \
         --repo $GITHUB_REPO \
         "schema-$VERSION.tar.gz" \
-        "client-$VERSION-node.tar.gz" \
-        "client-$VERSION-python.tar.gz" \
-        "client-$VERSION-typescript.tar.gz" \
         "migrations-$VERSION.tar.gz" 2>/dev/null || true
 else
     echo "⚠️ GitHub CLI not found, skipping release creation"
     echo "📋 Manual release creation required:"
     echo "   Tag: schema-$VERSION"
     echo "   Title: Schema Version $VERSION"
-    echo "   Assets: schema-$VERSION.tar.gz, client-*.tar.gz, migrations-*.tar.gz"
+    echo "   Assets: schema-$VERSION.tar.gz, migrations-*.tar.gz"
 fi
 
 # 7. Git operations (for local development)
@@ -98,8 +90,7 @@ if [ -d ".git" ]; then
 
 - Add schema version $VERSION
 - Update latest symlink
-- Generate clients for all languages
-- Include migration scripts" || echo "⚠️ No changes to commit"
+- Include migration scripts, changelog, and metadata" || echo "⚠️ No changes to commit"
     
     # Tag the version
     git tag "schema-$VERSION" || echo "⚠️ Tag already exists"
@@ -110,14 +101,16 @@ else
 fi
 
 # Clean up assets
-rm -f "schema-$VERSION.tar.gz" "client-$VERSION-"*.tar.gz "migrations-$VERSION.tar.gz"
+rm -f "schema-$VERSION.tar.gz" "migrations-$VERSION.tar.gz"
 
 echo "✅ Schema version $VERSION published successfully for development!"
 echo ""
 echo "📋 What was published:"
 echo "   • Schema version: $VERSION"
-echo "   • Generated clients: Node.js, Python, TypeScript"
+echo "   • Schema file: schema.prisma"
 echo "   • Migration scripts: $(ls -1 ./migrations/$VERSION/ 2>/dev/null | wc -l) files"
+echo "   • Changelog: changelog.md"
+echo "   • Metadata: metadata.json"
 echo "   • GitHub release: schema-$VERSION"
 echo ""
 echo "🚀 Services can now pull this schema version using:"

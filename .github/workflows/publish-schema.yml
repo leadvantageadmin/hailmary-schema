@@ -41,10 +41,9 @@ jobs:
             echo "version=$VERSION" >> $GITHUB_OUTPUT
           fi
 
-      # - name: Validate Schema and Generate Clients
+      # - name: Validate Schema (Client generation removed)
       #   run: |
       #     docker compose run --rm -v "$(pwd):/app" schema-service ./scripts/validate-schema.sh ${{ steps.version.outputs.version }}
-      #     docker compose run --rm -v "$(pwd):/app" schema-service ./scripts/generate-clients.sh ${{ steps.version.outputs.version }} all
 
       - name: Publish Schema Assets
         env:
@@ -58,9 +57,6 @@ jobs:
         with:
           files: |
             schema-${{ steps.version.outputs.version }}.tar.gz
-            client-${{ steps.version.outputs.version }}-node.tar.gz
-            client-${{ steps.version.outputs.version }}-python.tar.gz
-            client-${{ steps.version.outputs.version }}-typescript.tar.gz
           draft: false
           prerelease: false
           tag_name: schema-${{ steps.version.outputs.version }}
@@ -70,8 +66,9 @@ jobs:
 
             ### What's included:
             - Schema file: schema.prisma
-            - Generated clients: Node.js, Python, TypeScript
             - Migration scripts: Database migration files
+            - Changelog: changelog.md
+            - Metadata: metadata.json
 
             ### Usage:
             ```bash
@@ -83,10 +80,7 @@ jobs:
             ```
 
             ### Files:
-            - `schema-${{ steps.version.outputs.version }}.tar.gz` - Complete schema package (includes migrations)
-            - `client-${{ steps.version.outputs.version }}-node.tar.gz` - Node.js client
-            - `client-${{ steps.version.outputs.version }}-python.tar.gz` - Python client
-            - `client-${{ steps.version.outputs.version }}-typescript.tar.gz` - TypeScript types
+            - `schema-${{ steps.version.outputs.version }}.tar.gz` - Complete schema package (includes schema.prisma, migrations, changelog.md, and metadata.json)
 
       - name: Notify Services
         run: |

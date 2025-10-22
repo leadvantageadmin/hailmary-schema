@@ -39,37 +39,7 @@ app.get('/api/schema/version/:version', (req, res) => {
   }
 });
 
-// Get client for version and language
-app.get('/api/schema/client/:version/:language', (req, res) => {
-  const { version, language } = req.params;
-  const clientPath = path.join(__dirname, '..', 'versions', version, 'clients', language);
-  
-  try {
-    if (!fs.existsSync(clientPath)) {
-      return res.status(404).json({ error: 'Client not found' });
-    }
-    
-    // Create a tar.gz of the client directory
-    const { exec } = require('child_process');
-    const tarPath = `/tmp/client-${version}-${language}.tar.gz`;
-    
-    exec(`tar -czf ${tarPath} -C ${clientPath} .`, (error) => {
-      if (error) {
-        return res.status(500).json({ error: 'Failed to create client package' });
-      }
-      
-      res.download(tarPath, `client-${version}-${language}.tar.gz`, (err) => {
-        if (err) {
-          console.error('Download error:', err);
-        }
-        // Clean up temp file
-        fs.unlinkSync(tarPath);
-      });
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// Client endpoints removed - client generation support has been discontinued
 
 // List available versions
 app.get('/api/schema/versions', (req, res) => {
